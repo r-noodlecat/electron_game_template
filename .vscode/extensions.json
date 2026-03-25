@@ -1,0 +1,8 @@
+{
+  "recommendations": [
+    "GitHub.copilot",
+    "ise-hve-essentials.hve-core-all",
+    "ms-vscode.vscode-typescript-next",
+    "dbaeumer.vscode-eslint"
+  ]
+}
