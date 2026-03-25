@@ -57,7 +57,7 @@ Use these docs as the canonical references for architecture and conventions:
 
 - Runs `npm run build` to verify the project builds successfully.
 
-4. VS Code will also prompt you to install **recommended extensions** — click **Install All**.
+1. VS Code will also prompt you to install **recommended extensions** — click **Install All**.
 2. Press **F5** to build and launch the game, or run `npm start` from the terminal.
 
 That's it — zero manual installs beyond VS Code itself.
