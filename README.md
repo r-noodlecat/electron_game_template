@@ -1,6 +1,24 @@
-# Electron Game Template
+---
+title: Electron Game Template
+description: Electron + React + TypeScript + Vite desktop game template with VS Code and Copilot guidance
+---
+
+## Electron Game Template
 
 A minimal [Electron](https://www.electronjs.org/) + [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) + [Vite](https://vite.dev/) project template for building desktop games — pre-configured for VS Code with GitHub Copilot AI assistance.
+
+---
+
+## Documentation Map
+
+Use these docs as the canonical references for architecture and conventions:
+
+- [ARCHITECTURE.md](docs/ARCHITECTURE.md) — process model, security boundaries, and build pipeline
+- [CODE_ORGANIZATION.md](docs/CODE_ORGANIZATION.md) — decomposition patterns and modular structure
+- [FILE_CONVENTIONS.md](docs/FILE_CONVENTIONS.md) — naming, folders, data, constants, and assets
+- [INPUT_CONVENTIONS.md](docs/INPUT_CONVENTIONS.md) — keyboard rules and Escape handling priority
+- [UI_CONVENTIONS.md](docs/UI_CONVENTIONS.md) — component behavior, styling, and interaction rules
+- [COPILOT_TIPS.md](docs/COPILOT_TIPS.md) — practical prompting patterns for this template
 
 ---
 
@@ -36,8 +54,11 @@ A minimal [Electron](https://www.electronjs.org/) + [React](https://react.dev/) 
 3. A terminal opens and the setup script:
    - Detects whether Node.js is installed; if not, installs it via `winget`.
    - Runs `npm install` to fetch all dependencies.
+
+- Runs `npm run build` to verify the project builds successfully.
+
 4. VS Code will also prompt you to install **recommended extensions** — click **Install All**.
-5. Press **F5** to build and launch the game, or run `npm start` from the terminal.
+2. Press **F5** to build and launch the game, or run `npm start` from the terminal.
 
 That's it — zero manual installs beyond VS Code itself.
 
@@ -81,6 +102,17 @@ This starts the Vite dev server for the game (with hot module replacement) and l
 
 > For main process changes, stop and re-run `npm run dev`. The `watch` script (`npm run watch`) recompiles the main process on save if you prefer manual Electron restarts.
 
+### Setup Troubleshooting (Windows)
+
+If setup does not complete successfully, use this checklist:
+
+| Symptom | Likely cause | Fix |
+| ------- | ------------ | --- |
+| `winget` command not found | App Installer/winget unavailable | Install Node.js manually from [nodejs.org](https://nodejs.org/), then run `npm install` |
+| Node installed but still not detected | PATH not refreshed in current terminal | Restart VS Code and run **Terminal → Run Task → Setup** again |
+| Setup fails during build verification | TypeScript/Vite build error in current workspace state | Run `npm run build` manually, fix reported errors, then re-run setup |
+| `npm install` fails with network/registry errors | Temporary connectivity or registry issue | Re-run `npm install` and verify npm registry/proxy configuration |
+
 ---
 
 ## Project Structure
@@ -88,7 +120,8 @@ This starts the Vite dev server for the game (with hot module replacement) and l
 ```text
 electron_game_template/
 ├── .github/
-│   └── copilot-instructions.md  # Persistent Copilot context & conventions
+│   ├── copilot-instructions.md  # Persistent Copilot context & conventions
+│   └── instructions/            # Focused instruction files applied by glob
 ├── docs/
 │   └── ARCHITECTURE.md          # Process model, security design, module layout
 ├── src/
@@ -99,10 +132,13 @@ electron_game_template/
 │       ├── index.css            # Global styles (imported by main.tsx)
 │       ├── main.tsx             # React entry point (renders App into #root)
 │       ├── App.tsx              # Root React component (game canvas + loop)
+│       ├── global.d.ts          # Type declarations for window.gameAPI
 │       └── vite-env.d.ts        # Vite client type declarations
 ├── tests/
+│   ├── color-rules.test.ts      # Enforces semantic CSS color token rules
 │   ├── demo.test.ts             # Sample Vitest test
-│   └── docs.test.ts             # Documentation integrity tests
+│   ├── docs.test.ts             # Documentation integrity tests
+│   └── samplecontent/           # Test fixtures for docs/content checks
 ├── scripts/
 │   ├── package.ps1              # Source packaging (zip for sharing)
 │   └── setup.ps1                # First-time Windows setup (installs Node.js)
@@ -142,6 +178,7 @@ When you open the project in VS Code you will see a notification asking you to i
 | Extension | ID | Purpose |
 | --------- | -- | ------- |
 | **GitHub Copilot** | `GitHub.copilot` | AI code completions, chat, and Agent mode |
+| HVE Core All | `ise-hve-essentials.hve-core-all` | Additional instruction packs, agents, and skills |
 | TypeScript Next | `ms-vscode.vscode-typescript-next` | Latest TypeScript language service |
 | ESLint | `dbaeumer.vscode-eslint` | Linting |
 
@@ -215,7 +252,16 @@ Add a SceneManager class in src/game/SceneManager.ts that can register and switc
 | `npm run watch` | Recompile main process on every save |
 | `npm test` | Run all tests once via Vitest |
 | `npm run test:watch` | Run Vitest in watch mode (re-runs on file changes) |
+| `npm run lint` | Lint `src/` and `tests/` with ESLint |
 | `npm run cook` | Build + package for the current platform into `out/` |
+| `npm run package` | Create a source zip (excludes build artifacts and secrets) |
+
+### Packaging Modes
+
+| Mode | Command | Output | Primary use |
+| ---- | ------- | ------ | ----------- |
+| App package | `npm run cook` | `out/electron-game-template-<platform>-<arch>/` | Ship a runnable desktop build |
+| Source archive | `npm run package` | `out/electron_game_template_<date>.zip` | Share editable project source |
 
 ---
 
@@ -231,6 +277,19 @@ npm test
 
 # Watch mode — re-runs affected tests on save
 npm run test:watch
+```
+
+### Known Test Status
+
+At the moment, the full suite includes two known failing checks in `tests/color-rules.test.ts`:
+
+- `ensures fill and text tokens never share the same color in interactive states`
+- `guards room slot hover against white-on-white regressions`
+
+These failures are currently unrelated to README and docs updates. If you're only validating documentation changes, run:
+
+```bash
+npx vitest run tests/docs.test.ts
 ```
 
 ### Writing Tests
@@ -265,4 +324,4 @@ Vitest supports:
 
 The `cook` command produces a standalone, runnable folder in `out/` (e.g. `out/electron-game-template-win32-x64/`) — everything a user needs to run the game, with no installer required. Run it via **Terminal → Run Task → Cook** in VS Code, or directly from the command line.
 
-> **Note:** The cook script excludes `node_modules` because this template has no runtime dependencies. If you add runtime dependencies to your game, remove `node_modules` from the `--ignore` pattern in the `cook` script so they are bundled into the package.
+> **Note:** The `cook` script excludes `node_modules` by default. This template currently bundles renderer output into `dist/`, so packaged output works without shipping `node_modules`. If your game adds runtime Node/Electron module loading from `node_modules`, remove that ignore pattern so required packages are included.
