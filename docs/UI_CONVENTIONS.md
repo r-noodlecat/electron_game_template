@@ -561,7 +561,9 @@ Drag-and-drop is used for rearranging items (inventory management, loadout build
 
 ### Drop Targets
 
+- While the player is holding a valid draggable object, all valid drop targets should show a **subtle availability highlight** so the allowed destinations are visible at a glance.
 - Valid drop targets must show a **clear visual highlight** when the dragged item hovers over them. Use `--accent` as a border or background tint with `0.15–0.2` opacity. The highlight should appear immediately (no delay).
+- Use two emphasis levels when possible: a low-key baseline highlight for all valid targets during the drag, then a stronger active highlight for the specific valid target currently under the cursor.
 - Invalid drop targets show **no highlight**. If it helps clarity, invalid targets can briefly show a `--danger`-tinted border or a subtle "not allowed" indicator, but this is optional — absence of a highlight is usually sufficient.
 - When the dragged item leaves a drop target, the highlight removes immediately.
 
@@ -572,7 +574,8 @@ Drag-and-drop is used for rearranging items (inventory management, loadout build
 ### Dropping & Cancelling
 
 - On a valid drop: the item snaps into the target position immediately (no animation needed — instant feedback feels more responsive for inventory actions).
-- On an invalid drop or release outside any target: the item **returns to its original position**. A brief `150ms ease-out` snap-back animation is acceptable here.
+- Unless a specific UI explicitly documents different behavior, the slot or position the item came from remains a **valid drop target** for the entire drag.
+- On an invalid drop or release outside any target: the item **snaps back to its original slot or position**. A brief `150ms ease-out` snap-back animation is acceptable here.
 - Pressing **Escape** during a drag cancels it and returns the item to its source, same as an invalid drop.
 
 ### Swap vs. Insert
