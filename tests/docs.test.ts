@@ -42,6 +42,7 @@ const DOCS_DIR = path.join(ROOT, 'docs');
 const GITHUB_DIR = path.join(ROOT, '.github');
 const COPILOT_INSTRUCTIONS = path.join(GITHUB_DIR, 'copilot-instructions.md');
 const INSTRUCTIONS_DIR = path.join(GITHUB_DIR, 'instructions');
+const UI_CONVENTIONS = path.join(DOCS_DIR, 'UI_CONVENTIONS.md');
 
 const docFiles = collectMdFiles(DOCS_DIR);
 const githubFiles = collectMdFiles(GITHUB_DIR);
@@ -174,6 +175,10 @@ function parseFrontmatter(content: string): Record<string, string> | null {
   return result;
 }
 
+function normalizeWhitespace(content: string): string {
+  return content.replace(/\s+/g, ' ').trim();
+}
+
 describe('.github/instructions/: frontmatter is valid and complete', () => {
   const instructionsFiles = fs.existsSync(INSTRUCTIONS_DIR)
     ? fs.readdirSync(INSTRUCTIONS_DIR)
@@ -228,6 +233,43 @@ describe('.github/instructions/: frontmatter is valid and complete', () => {
       ).toBe(true);
     });
   }
+});
+
+// ─── 6. Critical UI overflow guidance stays documented ───────────────────────
+
+describe('UI overflow guidance: required scroll access remains documented', () => {
+  it('docs/UI_CONVENTIONS.md requires scroll access for off-screen content', () => {
+    const content = normalizeWhitespace(fs.readFileSync(UI_CONVENTIONS, 'utf-8'));
+
+    expect(
+      content.includes('Never allow required content or controls to become unreachable off-screen.'),
+      'docs/UI_CONVENTIONS.md must state that required UI cannot become unreachable off-screen',
+    ).toBe(true);
+
+    expect(
+      content.includes('If content, controls, or text would otherwise extend beyond the visible bounds of the window or a panel, provide a scrollbar so that content remains reachable.'),
+      'docs/UI_CONVENTIONS.md must require scrollbars for overflowing content',
+    ).toBe(true);
+
+    expect(
+      content.includes('Keep element placement stable when showing or hiding conditional UI.'),
+      'docs/UI_CONVENTIONS.md must require stable element placement for conditional UI',
+    ).toBe(true);
+  });
+
+  it('.github/copilot-instructions.md mirrors the overflow scrollbar rule', () => {
+    const content = normalizeWhitespace(fs.readFileSync(COPILOT_INSTRUCTIONS, 'utf-8'));
+
+    expect(
+      content.includes('If content would otherwise go off-screen, make it scrollable so it stays reachable.'),
+      '.github/copilot-instructions.md must mirror the overflow scrollbar requirement',
+    ).toBe(true);
+
+    expect(
+      content.includes('Showing or hiding conditional UI should not shift nearby controls around unless the design explicitly calls for it.'),
+      '.github/copilot-instructions.md must mirror the layout stability requirement',
+    ).toBe(true);
+  });
 });
 
 // ─── 7. copilot-instructions.md references every .instructions.md file ─────────

@@ -18,6 +18,9 @@ Drop this file in the project root alongside the other convention documents.
 - **Readability over scalability.** On large or high-DPI screens, UI elements should grow or remain comfortable — never shrink to fit more on screen at the cost of legibility.
 - Layouts may use flexible sizing (flex/grid with `fr` units, percentage widths) so panels fill available space, but text and interactive elements within those panels must respect the minimum size floors.
 - If a panel has more content than can fit, use scrolling. Do not compress content to avoid scrolling.
+- Never allow required content or controls to become unreachable off-screen. If content can extend past the visible bounds of a panel or viewport, wrap it in a scrollable container that uses the shared scrollbar styling.
+- Keep element placement stable when showing or hiding conditional UI. Revealing helper text, status text, or similar content must not shove nearby controls to a different position unless that movement is explicitly part of the design.
+- If a layout intentionally shifts when content appears or disappears, clarify that intent in code with a nearby `layout-shift-intentional:` comment so the behavior is explicit rather than accidental.
 
 ---
 
@@ -427,10 +430,12 @@ Custom scrollbars keep the UI feeling cohesive. Default OS scrollbars should be 
 
 - Use `::-webkit-scrollbar`, `::-webkit-scrollbar-thumb`, and `::-webkit-scrollbar-track` pseudo-elements. Since this is an Electron app, WebKit prefixes are sufficient.
 - Define scrollbar styles **globally** in the base stylesheet so every scrollable container inherits them automatically.
+- Provide a shared scroll-region utility class so panels that can overflow use the same `overflow: auto` behavior and scrollbar treatment.
 
 ### Scrollbar Behavior
 
 - **Only show when needed:** Use `overflow: auto` on all scrollable containers — never `overflow: scroll`. Scrollbars should not appear when content fits without scrolling.
+- **Required for overflow:** If content, controls, or text would otherwise extend beyond the visible bounds of the window or a panel, provide a scrollbar so that content remains reachable. Do not clip important UI off-screen.
 - **Overlay, not inline:** Scrollbars should float on top of content rather than consuming layout width. Use `overflow: overlay` where supported (Electron/Chromium), falling back to `overflow: auto`. This prevents content from shifting or losing `6–8px` of width when a scrollbar appears.
 - **Fade when idle:** The scrollbar thumb should fade out when the user stops scrolling and the cursor leaves the scrollable area. On hover or during active scroll, the thumb fades back in. This keeps panels clean when the player isn't interacting with the scroll.
 

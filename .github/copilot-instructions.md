@@ -186,6 +186,8 @@ All user-facing UI must follow the standards in `docs/UI_CONVENTIONS.md`. That f
 - **All colors** come from semantic CSS variables (`--bg-primary`, `--accent`, `--danger`, etc.). Never hard-code hex values.
 - **Fonts are consistent by element type.** All buttons share one font/weight/size. All headings share another. Defined in one place.
 - **Default gap** between elements in any grid or stack: `5px` via the `gap` property.
+- **Layout stability:** Showing or hiding conditional UI should not shift nearby controls around unless the design explicitly calls for it.
+- **Intentional layout shifts:** If a UI area is meant to move when content appears or disappears, clarify that choice with a nearby `layout-shift-intentional:` code comment.
 
 ### Component Patterns
 
@@ -200,7 +202,8 @@ All user-facing UI must follow the standards in `docs/UI_CONVENTIONS.md`. That f
 
 - **Z-index tiers:** Base `0` → Raised `10` → Dropdowns `20` → Overlays `30` → Modals `40` → Tooltips `50` → Critical `100+`. Never use arbitrary values.
 - **Animations:** `ease-out` for entrances, `ease-in` for exits. `120–150ms` for micro-interactions, `200–250ms` for panel transitions. Only animate `transform` and `opacity`.
-- **Scrollbars:** Custom-styled (thin, rounded, themed). `overflow: auto` only. Overlay mode, fade when idle.
+- **Scrollbars:** Custom-styled (thin, rounded, themed). `overflow: auto` only. Overlay mode, fade when idle. If content would otherwise go off-screen, make it scrollable so it stays reachable.
+- **Shared overflow utilities:** Prefer shared scroll-region and stable-slot primitives instead of ad hoc overflow and conditional-layout behavior.
 - **Disabled states:** Opacity `0.45–0.5`, desaturated, `cursor: not-allowed`, no hover effects. Pair with explanatory tooltip if reason isn't obvious.
 - **Empty states:** Placeholder label or dashed outline. Preserve grid shape. Use `--text-muted`.
 - **Loading states:** Shimmer skeleton placeholders for known layouts. Spinners only for indeterminate waits.

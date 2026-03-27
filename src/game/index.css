@@ -32,6 +32,42 @@ body,
   user-select: none;
 }
 
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 4px;
+  transition: background 120ms ease-out;
+}
+
+*:hover::-webkit-scrollbar-thumb,
+*:active::-webkit-scrollbar-thumb {
+  background: var(--border);
+}
+
+*:hover::-webkit-scrollbar-thumb:hover,
+*:active::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+.ui-scroll-region {
+  overflow: auto;
+  scrollbar-gutter: stable both-edges;
+  overscroll-behavior: contain;
+}
+
+.ui-stable-slot {
+  display: block;
+  min-block-size: 1.5rem;
+}
+
 #game-canvas {
   display: block;
   width: 100%;

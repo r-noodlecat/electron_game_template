@@ -17,6 +17,7 @@ When working on renderer UI code, follow the standards in [docs/UI_CONVENTIONS.m
 - Artistic/decorative fonts are for titles and headings only. Body text, labels, tooltips, and descriptions use a clean legible font.
 - Font family, weight, and size must be consistent per element type (all buttons share one style, all headings another). Define in CSS variables or a shared theme.
 - UI scale slider: adjust only the root `font-size` on `<html>`. Everything follows via `rem`. Never set root below `14px`.
+- If content would extend beyond a panel or viewport, make that region scrollable. Never leave required UI or content inaccessible off-screen.
 
 ## Color System
 
@@ -29,6 +30,8 @@ When working on renderer UI code, follow the standards in [docs/UI_CONVENTIONS.m
 
 - Default `gap: 5px` on all flex/grid containers unless a specific context requires more.
 - Use the `gap` property on the container, not margins on children.
+- Keep element positions stable when conditional content appears or disappears. Do not let helper text, validation text, or similar UI shift nearby controls unless that movement is intentional.
+- If a layout intentionally shifts, add a nearby `layout-shift-intentional:` code comment explaining why.
 
 ## Buttons
 
@@ -116,8 +119,10 @@ const style: CSSProperties | undefined = position
 
 - Custom scrollbars: `6px` wide, rounded thumb (`border-radius: 4px`), transparent track, no arrow buttons.
 - `overflow: auto` only — never `overflow: scroll`. Overlay mode (float on content, don't consume layout width).
+- Use scrollbars whenever content would otherwise overflow the visible window or container. Important content must stay reachable.
 - Fade when idle: thumb transparent by default, visible on container hover or active scroll.
 - Define globally in base stylesheet.
+- Prefer a shared scroll-region utility class so overflow behavior stays consistent across panels.
 
 ## Z-Index Layering
 
